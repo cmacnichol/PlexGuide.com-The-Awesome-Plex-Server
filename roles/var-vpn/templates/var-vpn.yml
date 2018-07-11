@@ -2,6 +2,7 @@
 
 #  storage: metadata
 #  claim_token: pms_token
-  vpnuser: pia_user
-  vpnpassword: pia_password
+  vpnprovider: vpn_provider
+  vpnuser: vpn_user
+  vpnpassword: vpn_password
   ipv4: ip_address

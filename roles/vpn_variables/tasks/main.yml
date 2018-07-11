@@ -26,6 +26,11 @@
   register: ipaddress
   ignore_errors: True
 
+- name: Register VPN Provider
+  shell: "cat /var/plexguide/vpn.provider"
+  register: vpnprovider
+  ignore_errors: True
+  
 - name: Register VPN Username
   shell: "cat /var/plexguide/vpn.user"
   register: vpnuser

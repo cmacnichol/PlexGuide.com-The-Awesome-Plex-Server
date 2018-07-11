@@ -35,25 +35,27 @@
     - /opt/appdata/vpn/deluge
     - /opt/appdata/vpn/deluge/config
     - /opt/appdata/vpn/deluge/config/openvpn
-
-########## Moving certs to config file
-- name: Copy default ovpn cert
+    - /opt/appdata/vpn/deluge/config/openvpn/providers/
+   
+########## Moving configs to config folder
+- name: Copy OpenVPN Providers
   template:
-    src: "ca.rsa.2048.crt"
-    dest: "/opt/appdata/vpn/deluge/config/openvpn/ca.rsa.2048.crt"
+    src: "providers/"
+    dest: "/opt/appdata/vpn/deluge/config/openvpn/providers/"
     force: yes
+    directory_mode: yes
 
-- name: Copy default ovpn pem
-  template:
-    src: "crl.rsa.2048.pem"
-    dest: "/opt/appdata/vpn/deluge/config/openvpn/crl.rsa.2048.pem"
-    force: yes
-
-- name: Copy default ovpn file
-  template:
-    src: "netherlands.ovpn"
-    dest: "/opt/appdata/vpn/deluge/config/openvpn/netherlands.ovpn"
-    force: yes
+#- name: Copy default ovpn pem
+#  template:
+#    src: "crl.rsa.2048.pem"
+#    dest: "/opt/appdata/vpn/deluge/config/openvpn/crl.rsa.2048.pem"
+#    directory_mode: yes
+#
+#- name: Copy default ovpn file
+#  template:
+#    src: "netherlands.ovpn"
+#    dest: "/opt/appdata/vpn/deluge/config/openvpn/netherlands.ovpn"
+#    directory_mode: yes
 
 ########## Remove old existing config file
 - name: Removing all ovpn files
@@ -64,16 +66,26 @@
 #    when: ovpn.stat.exists
 #  shell: rm -r  /opt/appdata/vpn/deluge/config/openvpn/*.ovpn
 
+########## VPN Provider
 
+- debug: msg="Using VPN provider {{vpnprovider}} . "
+
+########## Moving Provider config to config folder
+- name: Copy Provider Config
+  template:
+    src: "/opt/appdata/vpn/deluge/config/openvpn/providers/{{vpnprovider}}/"
+    dest: "/opt/appdata/vpn/deluge/config/openvpn/"
+    force: yes
+    directory_mode: yes
+    
 ########## Remote Server selection
 
 - name: Choose Server
   pause:
     prompt: " \n
-      What PIA server would you like to use?\n
+      What VPN server would you like to use?\n
          \n
-       czech, france, germany, israel, montreal,\n
-       romainia, sweden, switzerland, toronto or vancouver.\n
+       See your provider or the Wiki for valid options.\n
        \n
        "
   register: server
@@ -134,7 +146,7 @@
       VPN_ENABLED: "yes"
       VPN_USER: "{{vpnuser}}"
       VPN_PASS: "{{vpnpassword}}"
-      VPN_PROV: "pia"
+      VPN_PROV: {{vpnprovider}}"
       STRICT_PORT_FORWARD: "yes"
       STRONG_CERTS: "no"
       ENABLE_PRIVOXY: "yes"
